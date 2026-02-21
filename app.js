@@ -1,185 +1,255 @@
-(function () {
+(() => {
   const state = {
     deck: null,
     index: 0,
-    slidesEl: [],
+    compact: false
   };
 
-  const $ = (sel) => document.querySelector(sel);
+  const qs = (sel, el = document) => el.querySelector(sel);
+  const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
 
-  function setCompactMode() {
-    // Trigger compact mode for short viewports to avoid any manual zoom.
+  function computeCompactMode() {
     const h = window.innerHeight || document.documentElement.clientHeight;
-    const compact = h < 720; // tuned for laptops + mobile landscape
-    document.documentElement.dataset.compact = compact ? "1" : "0";
-  }
-
-  function el(tag, className, attrs = {}) {
-    const node = document.createElement(tag);
-    if (className) node.className = className;
-    for (const [k, v] of Object.entries(attrs)) {
-      if (v === null || v === undefined) continue;
-      if (k === "text") node.textContent = v;
-      else node.setAttribute(k, v);
+    // Compact for small heights (laptops, split view, mobile landscape)
+    const compact = h < 720;
+    if (compact !== state.compact) {
+      state.compact = compact;
+      document.body.classList.toggle("compact", compact);
     }
-    return node;
-  }
-
-  function renderProgress(total, active) {
-    const progress = $("#progress");
-    progress.innerHTML = "";
-    for (let i = 0; i < total; i++) {
-      const pip = el("span", "pip" + (i === active ? " active" : ""));
-      progress.appendChild(pip);
-    }
-  }
-
-  function renderSlide(slide, idx) {
-    const wrap = el("section", "slide", { "data-idx": String(idx), role: "group", "aria-label": `Slide ${idx + 1}` });
-
-    const kicker = el("div", "kicker", { text: state.deck?.meta?.title || "Presentation" });
-    const headline = el("h1", "headline", { text: slide.headline || "" });
-
-    wrap.appendChild(kicker);
-    wrap.appendChild(headline);
-
-    if (slide.subheadline) {
-      wrap.appendChild(el("p", "subheadline", { text: slide.subheadline }));
-    }
-
-    if (slide.type === "beforeAfter") {
-      const grid = el("div", "grid-2");
-      const left = el("div", "panel");
-      const right = el("div", "panel");
-
-      left.appendChild(el("h3", "", { text: slide.left?.title || "Before" }));
-      left.appendChild(renderBullets(slide.left?.bullets || []));
-
-      right.appendChild(el("h3", "", { text: slide.right?.title || "After" }));
-      right.appendChild(renderBullets(slide.right?.bullets || []));
-
-      grid.appendChild(left);
-      grid.appendChild(right);
-      wrap.appendChild(grid);
-    } else if (Array.isArray(slide.bullets) && slide.bullets.length) {
-      wrap.appendChild(renderBullets(slide.bullets));
-    }
-
-    if (slide.note) {
-      const note = el("div", "note");
-      note.appendChild(el("span", "label", { text: "Speaker" }));
-      note.appendChild(el("span", "", { text: slide.note }));
-      wrap.appendChild(note);
-    }
-
-    return wrap;
-  }
-
-  function renderBullets(items) {
-    const ul = el("ul", "list");
-    for (const txt of items) {
-      const li = el("li");
-      li.appendChild(el("span", "bdot"));
-      li.appendChild(el("div", "", { text: txt }));
-      ul.appendChild(li);
-    }
-    return ul;
-  }
-
-  function show(idx) {
-    const total = state.slidesEl.length;
-    const next = Math.max(0, Math.min(idx, total - 1));
-    state.index = next;
-
-    for (const s of state.slidesEl) s.classList.remove("active");
-    state.slidesEl[next].classList.add("active");
-
-    renderProgress(total, next);
-
-    // Keep focus on stage for keyboard control
-    const stage = $("#stage");
-    if (document.activeElement !== stage) stage.focus({ preventScroll: true });
-
-    // Update URL hash for easy sharing
-    history.replaceState(null, "", `#${next + 1}`);
-  }
-
-  function next() { show(state.index + 1); }
-  function prev() { show(state.index - 1); }
-
-  function onKey(e) {
-    // Prevent scrolling on Space
-    if (e.code === "Space") e.preventDefault();
-
-    const isTyping = ["INPUT", "TEXTAREA"].includes((e.target && e.target.tagName) || "");
-    if (isTyping) return;
-
-    if (e.code === "ArrowRight" || e.code === "PageDown") next();
-    else if (e.code === "ArrowLeft" || e.code === "PageUp") prev();
-    else if (e.code === "Space") (e.shiftKey ? prev() : next());
-  }
-
-  function onWheel(e) {
-    // Gentle trackpad flicks: small threshold
-    const dy = e.deltaY || 0;
-    if (Math.abs(dy) < 12) return;
-    if (dy > 0) next();
-    else prev();
   }
 
   async function loadDeck() {
-    // Load content.json (content separation requirement).
-    const res = await fetch("content.json", { cache: "no-store" });
-    if (!res.ok) throw new Error(`Failed to load content.json (${res.status})`);
+    const res = await fetch("./content.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("Failed to load content.json");
     return await res.json();
   }
 
-  function initFromHash(total) {
-    const n = parseInt((location.hash || "").replace("#", ""), 10);
-    if (Number.isFinite(n) && n >= 1 && n <= total) return n - 1;
-    return 0;
+  function esc(s) {
+    return String(s)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function el(tag, attrs = {}, children = []) {
+    const node = document.createElement(tag);
+    Object.entries(attrs).forEach(([k, v]) => {
+      if (v == null) return;
+      if (k === "class") node.className = v;
+      else if (k === "html") node.innerHTML = v;
+      else if (k.startsWith("on") && typeof v === "function") node.addEventListener(k.slice(2), v);
+      else node.setAttribute(k, String(v));
+    });
+    for (const ch of children) node.appendChild(ch);
+    return node;
+  }
+
+  function buildTopbar(meta, total, idx) {
+    const brand = el("div", { class: "brand" }, [
+      el("span", { class: "pip", "aria-hidden": "true" }),
+      el("span", { html: esc(meta?.title ?? "") })
+    ]);
+
+    const progress = el("div", { class: "progress", "aria-hidden": "true" });
+    for (let i = 0; i < total; i++) {
+      progress.appendChild(el("span", { class: i === idx ? "active" : "" }));
+    }
+
+    const hint = el("div", { class: "hint", html: esc("Space / ← →") });
+
+    return el("header", { class: "topbar" }, [brand, progress, hint]);
+  }
+
+  function buildBullets(items = []) {
+    const ul = el("ul", { class: "bullets fadeIn" });
+    items.forEach(t => {
+      ul.appendChild(
+        el("li", {}, [
+          el("span", { class: "dot", "aria-hidden": "true" }),
+          el("span", { html: esc(t) })
+        ])
+      );
+    });
+    return ul;
+  }
+
+  function slideTitle(s) {
+    const inner = el("div", { class: "inner" });
+
+    inner.appendChild(el("div", { class: "sectionCenter" }, [
+      el("div", { class: "kicker", html: esc("Presentation") }),
+      el("h1", { class: "headline fadeIn", html: esc(s.headline || "") }),
+      ...(s.subheadline ? [el("p", { class: "subheadline fadeIn", html: esc(s.subheadline) })] : []),
+      ...(Array.isArray(s.bullets) && s.bullets.length ? [buildBullets(s.bullets)] : [])
+    ]));
+
+    return inner;
+  }
+
+  function slideSection(s) {
+    return el("div", { class: "inner" }, [
+      el("div", { class: "sectionCenter" }, [
+        el("div", { class: "kicker", html: esc("Section") }),
+        el("h1", { class: "headline fadeIn", html: esc(s.headline || "") }),
+        ...(s.subheadline ? [el("p", { class: "subheadline fadeIn", html: esc(s.subheadline) })] : [])
+      ])
+    ]);
+  }
+
+  function slideContent(s) {
+    const inner = el("div", { class: "inner" });
+
+    inner.appendChild(el("div", { class: "kicker", html: esc(s.subheadline ? "Concept" : "Slide") }));
+    inner.appendChild(el("h1", { class: "rule fadeIn", html: esc(s.headline || "") }));
+    if (s.subheadline) inner.appendChild(el("p", { class: "subheadline fadeIn", html: esc(s.subheadline) }));
+    if (Array.isArray(s.bullets) && s.bullets.length) inner.appendChild(buildBullets(s.bullets));
+
+    return inner;
+  }
+
+  function slideBeforeAfter(s) {
+    const inner = el("div", { class: "inner" });
+    inner.appendChild(el("div", { class: "kicker", html: esc("Compare") }));
+    inner.appendChild(el("h1", { class: "rule fadeIn", html: esc(s.headline || "") }));
+    if (s.subheadline) inner.appendChild(el("p", { class: "subheadline fadeIn", html: esc(s.subheadline) }));
+
+    const wrap = el("div", { class: "twocol fadeIn" }, [
+      el("section", { class: "card" }, [
+        el("h3", { class: "cardTitle", html: esc(s.left?.title || "") }),
+        buildBullets(s.left?.bullets || [])
+      ]),
+      el("section", { class: "card" }, [
+        el("h3", { class: "cardTitle", html: esc(s.right?.title || "") }),
+        buildBullets(s.right?.bullets || [])
+      ])
+    ]);
+
+    inner.appendChild(wrap);
+    return inner;
+  }
+
+  function slideClosing(s) {
+    const inner = el("div", { class: "inner" });
+    inner.appendChild(el("div", { class: "kicker", html: esc("Closing") }));
+    inner.appendChild(el("h1", { class: "headline fadeIn", html: esc(s.headline || "") }));
+    if (s.subheadline) inner.appendChild(el("p", { class: "subheadline fadeIn", html: esc(s.subheadline) }));
+    if (Array.isArray(s.bullets) && s.bullets.length) inner.appendChild(buildBullets(s.bullets));
+    return inner;
+  }
+
+  function buildSlide(slide) {
+    switch (slide.type) {
+      case "title": return slideTitle(slide);
+      case "section": return slideSection(slide);
+      case "beforeAfter": return slideBeforeAfter(slide);
+      case "closing": return slideClosing(slide);
+      case "content":
+      default: return slideContent(slide);
+    }
+  }
+
+  function render() {
+    const app = qs("#app");
+    app.innerHTML = "";
+
+    const deck = state.deck;
+    const slides = deck?.slides || [];
+    const total = slides.length;
+    state.index = clamp(state.index, 0, Math.max(0, total - 1));
+    const s = slides[state.index] || {};
+
+    document.title = deck?.meta?.title ? `${deck.meta.title}` : "Deck";
+
+    const deckEl = el("div", { class: "deck" });
+
+    deckEl.appendChild(buildTopbar(deck.meta || {}, total, state.index));
+
+    const stage = el("div", { class: "stage" });
+    const slide = el("article", {
+      class: "slide",
+      role: "group",
+      "aria-roledescription": "slide",
+      "aria-label": `${state.index + 1} of ${total}`
+    });
+
+    slide.appendChild(buildSlide(s));
+    stage.appendChild(slide);
+    deckEl.appendChild(stage);
+
+    app.appendChild(deckEl);
+
+    // Speaker note to console only (never rendered)
+    if (s.note) {
+      // eslint-disable-next-line no-console
+      console.log(`Speaker note (slide ${state.index + 1}/${total}): ${s.note}`);
+    }
+  }
+
+  function next() {
+    state.index = Math.min(state.index + 1, state.deck.slides.length - 1);
+    render();
+  }
+  function prev() {
+    state.index = Math.max(state.index - 1, 0);
+    render();
+  }
+
+  function onKey(e) {
+    if (e.key === " " || e.code === "Space") {
+      e.preventDefault();
+      if (e.shiftKey) prev();
+      else next();
+      return;
+    }
+    if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); next(); return; }
+    if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); prev(); return; }
+    if (e.key === "Home") { e.preventDefault(); state.index = 0; render(); return; }
+    if (e.key === "End") { e.preventDefault(); state.index = state.deck.slides.length - 1; render(); return; }
+  }
+
+  function bind() {
+    window.addEventListener("keydown", onKey, { passive: false });
+    window.addEventListener("resize", () => { computeCompactMode(); }, { passive: true });
+
+    // Basic swipe support (mobile)
+    let sx = null, sy = null;
+    window.addEventListener("touchstart", (e) => {
+      const t = e.touches?.[0];
+      if (!t) return;
+      sx = t.clientX; sy = t.clientY;
+    }, { passive: true });
+
+    window.addEventListener("touchend", (e) => {
+      const t = e.changedTouches?.[0];
+      if (!t || sx == null || sy == null) return;
+      const dx = t.clientX - sx;
+      const dy = t.clientY - sy;
+      sx = sy = null;
+
+      if (Math.abs(dx) < 55) return;
+      if (Math.abs(dx) < Math.abs(dy)) return;
+      if (dx < 0) next();
+      else prev();
+    }, { passive: true });
   }
 
   async function init() {
-    setCompactMode();
-    window.addEventListener("resize", setCompactMode);
-
-    try {
-      state.deck = await loadDeck();
-    } catch (err) {
-      // Friendly error for file:// environments where fetch may be blocked.
-      const stage = $("#stage");
-      stage.innerHTML = "";
-      const s = el("section", "slide active");
-      s.appendChild(el("div", "kicker", { text: "Setup" }));
-      s.appendChild(el("h1", "headline", { text: "This deck needs local file access" }));
-      s.appendChild(el("p", "subheadline", { text: "Open with a simple local server so content.json can load." }));
-      s.appendChild(renderBullets([
-        "VS Code: install “Live Server” and click “Go Live”",
-        "Or run: python -m http.server (in this folder)",
-        "Then open http://localhost:8000"
-      ]));
-      stage.appendChild(s);
-      console.error(err);
-      return;
-    }
-
-    $("#deckTitle").textContent = state.deck.meta?.title || "Deck";
-    document.title = state.deck.meta?.title || "Deck";
-
-    const stage = $("#stage");
-    stage.innerHTML = "";
-
-    const slides = state.deck.slides || [];
-    state.slidesEl = slides.map((sl, i) => renderSlide(sl, i));
-    for (const node of state.slidesEl) stage.appendChild(node);
-
-    document.addEventListener("keydown", onKey, { passive: false });
-    document.addEventListener("wheel", onWheel, { passive: true });
-
-    const start = initFromHash(state.slidesEl.length);
-    show(start);
+    computeCompactMode();
+    bind();
+    state.deck = await loadDeck();
+    render();
   }
 
-  init();
+  init().catch(err => {
+    const app = qs("#app");
+    app.innerHTML = "";
+    const msg = document.createElement("pre");
+    msg.textContent = String(err?.message || err);
+    msg.style.whiteSpace = "pre-wrap";
+    msg.style.color = "rgba(234,240,255,.9)";
+    msg.style.padding = "24px";
+    app.appendChild(msg);
+  });
 })();
