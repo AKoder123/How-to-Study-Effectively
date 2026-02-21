@@ -1,0 +1,117 @@
+{
+  "meta": {
+    "deckId": "study-system-v1",
+    "title": "Study That Actually Sticks",
+    "theme": "modern-dark"
+  },
+  "slides": [
+    {
+      "type": "title",
+      "headline": "Study That Actually Sticks",
+      "subheadline": "A simple system for real learning in less time",
+      "bullets": [
+        "Active recall",
+        "Spacing + interleaving",
+        "Feedback-driven practice"
+      ],
+      "note": "If studying feels easy, it’s probably not working."
+    },
+    {
+      "type": "content",
+      "headline": "Most people “study,” but don’t learn",
+      "bullets": [
+        "Re-reading feels productive, but fades fast",
+        "Highlighting builds familiarity, not fluency",
+        "Learning = retrieve, apply, and correct"
+      ],
+      "note": "If studying feels easy, it’s probably not working."
+    },
+    {
+      "type": "content",
+      "headline": "The 3 rules of effective study",
+      "bullets": [
+        "Active recall: pull answers from memory",
+        "Spaced repetition: revisit across days",
+        "Deliberate practice: attack what’s wrong"
+      ],
+      "note": "These three are the difference between “I saw it” and “I can do it.”"
+    },
+    {
+      "type": "content",
+      "headline": "Active recall: what to do",
+      "bullets": [
+        "Blurting: close notes → write → check gaps",
+        "Practice questions: exam-style, not summaries",
+        "Teach-back: explain it like tutoring"
+      ],
+      "note": "Replace passive review with retrieval."
+    },
+    {
+      "type": "beforeAfter",
+      "headline": "Swap reading for retrieval",
+      "left": {
+        "title": "Instead of",
+        "bullets": [
+          "Read the chapter",
+          "Rewrite notes",
+          "Highlight key lines"
+        ]
+      },
+      "right": {
+        "title": "Do this",
+        "bullets": [
+          "Answer 10 questions",
+          "Mark errors fast",
+          "Fix gaps immediately"
+        ]
+      },
+      "note": "Questions expose gaps. Gaps guide the plan."
+    },
+    {
+      "type": "content",
+      "headline": "Spacing + interleaving: schedule it",
+      "bullets": [
+        "Short sessions beat cramming",
+        "Day 0 learn → Day 1 recall",
+        "Day 3 recall → Day 7 mixed practice",
+        "Mix topics; avoid 3-hour single blocks",
+        "Feels harder → works better"
+      ],
+      "note": "Interleaving builds the right choice under pressure."
+    },
+    {
+      "type": "content",
+      "headline": "The feedback loop: improve faster",
+      "bullets": [
+        "What was wrong? Why was it wrong?",
+        "What pattern keeps repeating?",
+        "What will I change next session?",
+        "Rule: mistakes become your study plan",
+        "70% weak areas, 30% review"
+      ],
+      "note": "Don’t just do more—do what fixes the errors."
+    },
+    {
+      "type": "content",
+      "headline": "A simple 45-minute template",
+      "bullets": [
+        "0–5: set a specific outcome",
+        "5–25: recall / questions",
+        "25–35: mark + error log",
+        "35–45: retry wrong questions",
+        "Schedule the next review"
+      ],
+      "note": "No fancy motivation needed—just a system."
+    },
+    {
+      "type": "closing",
+      "headline": "Technique beats time",
+      "subheadline": "One change that moves the needle",
+      "bullets": [
+        "Swap re-reading for retrieval",
+        "Then space it out across days"
+      ],
+      "note": "Effective studying isn’t about time. It’s about technique."
+    }
+  ]
+}
