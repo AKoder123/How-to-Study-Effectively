@@ -1,77 +1,73 @@
 {
   "meta": {
-    "deckId": "study-system-v1",
-    "title": "Study That Actually Sticks",
-    "theme": "midnight"
+    "deckId": "effective-study-deck",
+    "title": "Study That Actually Works",
+    "theme": "aurora-dark"
   },
   "slides": [
     {
       "type": "title",
-      "headline": "Study that actually sticks.",
-      "subheadline": "A 2‑minute system for real learning.",
+      "headline": "Study That Actually Works",
+      "subheadline": "Learn faster. Remember longer. Stress less.",
       "bullets": [
-        "Stop “feeling productive”",
-        "Start retrieving and applying"
+        "Stop passive studying",
+        "Use retrieval + spacing",
+        "Turn mistakes into a plan"
       ],
       "note": "If studying feels easy, it’s probably not working."
     },
     {
       "type": "content",
-      "headline": "Most people study, but don’t learn.",
+      "headline": "Most people “study,” but don’t learn",
+      "subheadline": "Easy feels productive. It isn’t.",
       "bullets": [
-        "Re-reading feels productive, but fades fast",
+        "Re-reading feels busy, but fades fast",
         "Highlighting builds familiarity, not fluency",
-        "Learning = retrieve + apply, repeatedly"
+        "Learning sticks when you retrieve and apply"
       ],
-      "note": "Set the stakes: easy study often produces weak recall."
+      "note": "If studying feels easy, it’s probably not working."
     },
     {
-      "type": "section",
+      "type": "content",
       "headline": "The 3 rules of effective study",
-      "subheadline": "Do these, and results follow."
-    },
-    {
-      "type": "content",
-      "headline": "Rule 1: Active recall",
-      "subheadline": "Force your brain to pull answers out.",
       "bullets": [
-        "Practice questions, exam-style",
-        "Write from memory, then check",
-        "Explain it like you’re tutoring"
+        "Active recall: pull answers from memory",
+        "Spaced repetition: revisit across days",
+        "Deliberate practice: attack what you miss"
       ],
-      "note": "Difference between “I saw it” and “I can do it.”"
+      "note": "These three are the difference between “I saw it” and “I can do it.”"
+    },
+    {
+      "type": "beforeAfter",
+      "headline": "Active recall: swap passive for retrieval",
+      "left": {
+        "title": "Passive",
+        "bullets": [
+          "Re-read notes",
+          "Highlight paragraphs",
+          "Summarise without testing"
+        ]
+      },
+      "right": {
+        "title": "Active",
+        "bullets": [
+          "Blurting: write from memory",
+          "Practice questions: exam-style",
+          "Teach-back: explain like tutoring"
+        ]
+      },
+      "note": "Instead of “read the chapter,” do “10 questions → mark → fix errors.”"
     },
     {
       "type": "content",
-      "headline": "How to do active recall",
+      "headline": "Spacing + interleaving",
+      "subheadline": "Harder now. Better later.",
       "bullets": [
-        "Blurting: close notes, dump memory",
-        "Mark gaps, then fill only gaps",
-        "Teach-back: simplify, then sharpen",
-        "Swap reading for 10 timed questions"
-      ],
-      "note": "Quick example: don’t read the chapter—answer questions and fix errors."
-    },
-    {
-      "type": "content",
-      "headline": "Rule 2: Spaced repetition",
-      "subheadline": "Short sessions over multiple days.",
-      "bullets": [
-        "Day 0: learn once, briefly",
-        "Day 1: recall without notes",
-        "Day 3: recall again",
-        "Day 7: mixed practice"
-      ]
-    },
-    {
-      "type": "content",
-      "headline": "Rule 3: Interleave topics",
-      "subheadline": "Mix topics so your brain chooses methods.",
-      "bullets": [
-        "Avoid 3 hours of one topic",
-        "Rotate topics every 20–30 minutes",
-        "Feels harder, works better",
-        "Builds exam-ready decision making"
+        "Cramming loses to short daily sessions",
+        "Day 0 learn, Day 1 recall",
+        "Day 3 recall again, Day 7 mixed practice",
+        "Mix topics, don’t grind one for hours",
+        "Makes method-choice automatic under pressure"
       ]
     },
     {
@@ -79,33 +75,31 @@
       "headline": "The feedback loop",
       "subheadline": "Your mistakes are your study plan.",
       "bullets": [
-        "What was wrong, and why?",
+        "What did I get wrong, and why?",
         "What pattern keeps repeating?",
-        "What will I change next time?",
-        "Spend 70% on weak areas"
+        "What will I fix next session?",
+        "Spend 70% weak areas, 30% review"
       ]
     },
     {
       "type": "content",
-      "headline": "A simple 45‑minute session",
+      "headline": "A simple 45‑minute template",
       "bullets": [
         "0–5: set a specific outcome",
-        "5–25: recall or questions",
-        "25–35: mark + error log",
-        "35–45: redo wrong ones",
-        "Schedule the next review"
+        "5–25: recall or practice questions",
+        "25–35: mark + log mistakes",
+        "35–45: redo misses + schedule review"
       ],
       "note": "No fancy motivation needed—just a system."
     },
     {
       "type": "closing",
-      "headline": "Technique beats time.",
-      "subheadline": "One change that moves the needle:",
+      "headline": "Technique beats time",
+      "subheadline": "One change that moves everything:",
       "bullets": [
         "Swap re-reading for retrieval",
-        "Then space it out"
-      ],
-      "note": "Closing line: effective studying isn’t about time—it’s about technique."
+        "Then space it out across days"
+      ]
     }
   ]
 }

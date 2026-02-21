@@ -2,12 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Deck</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Study That Actually Works</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <main id="app" aria-live="polite"></main>
+  <main id="app" class="app" aria-live="polite">
+    <div class="bg" aria-hidden="true">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="grid"></div>
+    </div>
+
+    <header class="hud" aria-hidden="true">
+      <div class="hud-left">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <span id="deckTitle" class="brand-title">Deck</span>
+        </div>
+      </div>
+      <div class="hud-right">
+        <div class="pill">
+          <span id="slideIndex">1</span>
+          <span class="pill-sep">/</span>
+          <span id="slideTotal">1</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="stage">
+      <div id="slide" class="slide" role="group" aria-label="Slide"></div>
+    </section>
+
+    <div class="hint" aria-hidden="true">
+      <kbd>Space</kbd> next <span class="dot">•</span> <kbd>←</kbd><kbd>→</kbd> nav
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </main>
 
   <script src="app.js"></script>
 </body>
